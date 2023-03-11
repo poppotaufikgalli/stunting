@@ -1,11 +1,19 @@
 @include('layout.header')
-<div class="row">
-    @include('layout.sidebar')
-    <main class="col-md-9 ms-sm-auto col-lg-10">
-        @yield('content')
 
-        <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-    </main>
-</div>
-
+    @if(!isset($side))
+        <div class="row">
+            @include('layout.sidebar')
+            <main class="col-md-9 ms-sm-auto col-lg-10">
+                @yield('content')        
+            </main>
+        </div>
+    @else
+        <div>
+            @include('layout.no_sidebar')
+            <div class="container">
+                @yield('content')        
+            </div>
+        </div>
+    @endif 
+@yield('js-content')
 @include('layout.footer')

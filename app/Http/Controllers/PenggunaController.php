@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Akses;
+use App\Models\Group;
 use Illuminate\Http\Request;
 //use App\Http\Requests\PenggunaRequest;
 
@@ -11,13 +12,14 @@ use Illuminate\Validation\Rule;
 
 class PenggunaController extends Controller
 {
-    function show()
+    function list()
     {
         $data = [
             'page' => "Pengguna",
             'method' => "Daftar",
-            'user' => User::get()
+            'user' => Akses::get()
         ];
+        //dd($data);
         return view('pengguna', $data);
     }
 
@@ -26,6 +28,7 @@ class PenggunaController extends Controller
         $data = [
             'page' => "Pengguna",
             'method' => "Tambah",
+            'group' => Group::get(),
         ];
         return view('pengguna', $data);
     }
@@ -35,17 +38,8 @@ class PenggunaController extends Controller
         $data = [
             'page' => "Pengguna",
             'method' => "Edit",
-            'user' => User::find($id)
-        ];
-        return view('pengguna', $data);
-    }
-
-    function resetpassword($id)
-    {
-        $data = [
-            'page' => "Pengguna",
-            'method' => "Reset Password",
-            'user' => User::find($id)
+            'user' => Akses::find($id),
+            'group' => Group::get(),
         ];
         return view('pengguna', $data);
     }
@@ -55,7 +49,8 @@ class PenggunaController extends Controller
         $data = [
             'page' => "Pengguna",
             'method' => 'Hapus',
-            'user' => User::find($id)
+            'user' => Akses::find($id),
+            'group' => Group::get(),
         ];
         return view('pengguna', $data);
     }
@@ -66,54 +61,44 @@ class PenggunaController extends Controller
             case 'Tambah':
                 $reqData = $request->all();
                 $validator = Validator::make($reqData, [
-                    'nip' => 'required|unique:users,nip',
-                    'email' => 'required|email|unique:users,email',
-                    'nama' => 'required',
-                    'jabatan' => 'required',
-                    'password' => 'required|min:8',
-                    'password_confirmation' => 'required|same:password'
+                    'nip' => 'required|unique:akses,nip',
+                    'no_hp' => 'required|unique:akses,no_hp',
+                    'gid' => 'required',
                 ],[
-                    'email.required' => 'Email tidak boleh kosong',
-                    'email.email' => 'Format email tidak sesuai',
-                    'email.unique' => 'Email telah terdaftar',
-
-                    'nama.required' => 'Nama tidak boleh kosong',
-
                     'nip.required' => 'NIP tidak boleh kosong',
                     'nip.unique' => 'NIP telah terdaftar',
 
-                    'jabatan.required' => 'Jabatan tidak boleh kosong',
+                    'no_hp.required' => 'Nomor HP tidak boleh kosong',
+                    'no_hp.unique' => 'Nomor HP telah terdaftar',
 
-                    'password.required' => 'Password tidak boleh kosong',
-                    'password.min' => 'Password tidak boleh kurang dari 8',
-
-                    'password_confirmation.required' => 'Konfirmasi Password tidak boleh kosong',
-                    'password_confirmation.same' => 'Konfirmasi Password tidak sama dengan Password',
+                    'gid.required' => 'Group tidak boleh kosong',
                 ]);
 
                 if($validator->fails())
                 {
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
-                $user = User::create($reqData);
+
+                $reqData['crid'] = $request->session()->get('nip');
+                $user = Akses::create($reqData);
                 return redirect('/pengguna')->with('success', "Pengguna berhasil ditambahkan.");
                 break;
 
             case 'Edit':
-                $reqData = $request->only('nip', 'nama', 'jabatan');
+                $reqData = $request->only('nip', 'nama', 'no_hp', 'gid');
                 $id = $request->id;
                 $validator = Validator::make($reqData, [
-                    'nama' => ['required', Rule::unique('users')->ignore($id)],
-                    'nip' => ['required', Rule::unique('users')->ignore($id)],
-                    'jabatan' => 'required',
+                    'nip' => ['required', Rule::unique('akses')->ignore($id)],
+                    'no_hp' => ['required', Rule::unique('akses')->ignore($id)],
+                    'gid' => 'required',
                 ],[
-                    'nama.required' => 'Nama tidak boleh kosong',
-                    'nama.unique' => 'Nama telah terdaftar',
-
                     'nip.required' => 'NIP tidak boleh kosong',
                     'nip.unique' => 'NIP telah terdaftar',
 
-                    'jabatan.required' => 'Jabatan tidak boleh kosong',
+                    'no_hp.required' => 'Nomor HP tidak boleh kosong',
+                    'no_hp.unique' => 'Nomor HP telah terdaftar',
+
+                    'gid.required' => 'Group tidak boleh kosong',
                 ]);
 
                 if($validator->fails())
@@ -121,39 +106,15 @@ class PenggunaController extends Controller
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
 
-                //$data->validated();
-                $user = User::find($id)->update($reqData);
+                $reqData['upid'] = $request->session()->get('nip');
+                $user = Akses::find($id)->update($reqData);
                 return redirect('/pengguna')->with('success', "Pengguna berhasil diubah.");
-                break;
-
-            case 'resetpassword':
-                $id = $request->id;
-                $reqData = $request->only('password', 'password_confirmation');
-
-                $validator = Validator::make($reqData, [
-                    'password' => 'required|min:8',
-                    'password_confirmation' => 'required|same:password'
-                ],[
-                    'password.required' => 'Password tidak boleh kosong',
-                    'password.min' => 'Password tidak boleh kurang dari 8',
-
-                    'password_confirmation.required' => 'Konfirmasi Password tidak boleh kosong',
-                    'password_confirmation.same' => 'Konfirmasi Password tidak sama dengan Password',
-                ]);
-
-                if($validator->fails())
-                {
-                    return redirect()->back()->withErrors($validator)->withInput();
-                }
-
-                $user = User::find($id)->update($reqData);
-                return redirect('/pengguna')->with('success', "Password pengguna berhasil diubah.");
                 break;
 
             case 'Hapus':
                 $id = $request->id;
                 $name = $request->nama;
-                $user = User::find($id)->delete();
+                $user = Akses::find($id)->delete();
                 return redirect('/pengguna')->with('success', "Pengguna berhasil dihapus.");
                 break;
             

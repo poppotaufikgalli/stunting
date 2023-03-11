@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('do_upload_file', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_user');
+            $table->string('nip', 18);
             $table->string('nama_user');
             $table->string('nama_file');
             $table->string('nama_target_table');

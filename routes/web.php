@@ -2,9 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\DownloadFileController;
 use App\Http\Controllers\DataSheetController;
+
+use App\Http\Controllers\EppgbmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,26 +43,21 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
     /**
      * Home Routes
      */
-    
 
-    Route::group(['middleware' => ['guest']], function() {
-        /**
-         * Login Routes
-         */
-        Route::get('/login', 'LoginController@show')->name('login.show');
-        Route::post('/login', 'LoginController@login')->name('login.perform');
+    Route::get('/', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/vdashboard', [DashboardController::class, 'vdashboard'])->name('vdashboard');
+    Route::get('/login', [LoginController::class, 'show'])->name('login.show');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.perform');
+    Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
+    Route::get('/unauthorized',[DashboardController::class, 'unauthorized'])->name('unauthorized');
 
-    });
-
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['role_check']], function() {
         /**
          * Logout Routes
          */
-        Route::get('/', 'DashboardController@index')->name('home.index');
-        
-        Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
+        //Route::get('/', 'DashboardController@index')->name('home.index');
 
-        Route::get('/dashboard',[DashboardController::class, 'index']);
+        //Route::get('/dashboard',[DashboardController::class, 'index']);
 
         Route::prefix('data')->group(function () {
             Route::get('/',[DataSheetController::class, 'show'])->name('data.show');
@@ -78,13 +77,37 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         //Route::get('/pengguna', [PenggunaController::class, 'show'])->name('pengguna.show');
         Route::prefix('pengguna')->group(function () {
-            Route::get('/', [PenggunaController::class, 'show'])->name('pengguna.show');
+            Route::get('/', [PenggunaController::class, 'list'])->name('pengguna');
+            //Route::get('/', [PenggunaController::class, 'show'])->name('pengguna.show');
             Route::get('/tambah', [PenggunaController::class, 'tambah'])->name('pengguna.tambah');
             Route::get('/edit/{id}', [PenggunaController::class, 'edit'])->name('pengguna.edit');
             Route::get('/resetpassword/{id}', [PenggunaController::class, 'resetpassword'])->name('pengguna.resetpassword');
             Route::post('/postPengguna/{method}', [PenggunaController::class, 'postPengguna'])->name('pengguna.perform');
             Route::get('/hapus/{id}', [PenggunaController::class, 'hapus'])->name('pengguna.hapus');
         });
+
+        Route::prefix('group')->group(function () {
+            Route::get('/', [GroupController::class, 'list'])->name('group');
+            //Route::get('/', [GroupController::class, 'show'])->name('group.show');
+            Route::get('/tambah', [GroupController::class, 'tambah'])->name('group.tambah');
+            Route::get('/edit/{id}', [GroupController::class, 'edit'])->name('group.edit');
+            Route::post('/postGroup/{method}', [GroupController::class, 'postGroup'])->name('group.perform');
+            Route::get('/hapus/{id}', [GroupController::class, 'hapus'])->name('group.hapus');
+        });
+
+        Route::prefix('eppgbm')->group(function () {
+            Route::get('/', [EppgbmController::class, 'list'])->name('eppgbm');
+        });
+
+        Route::prefix('ilsimil')->group(function () {
+            Route::get('/', [GroupController::class, 'list'])->name('ilsimil');
+        });
+
+        Route::prefix('ekohot')->group(function () {
+            Route::get('/', [GroupController::class, 'list'])->name('ekohot');
+        });
+
+
 
         Route::get('/daftar',[PenggunaController::class, 'daftar'])->name('daftar');
     });

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
+use App\Models\Akses;
 
 class LoginController extends Controller
 {
@@ -29,16 +32,27 @@ class LoginController extends Controller
     {
         $credentials = $request->getCredentials();
 
-        if(!Auth::validate($credentials)):
+        $SIAP = $this->SIAPLogin($credentials);
+        if(!$SIAP->loginStatus):
             return redirect()->to('login')
-                ->withErrors(trans('auth.failed'));
+                ->withErrors($SIAP->message)
+                ->onlyInput('nip');
         endif;
 
-        $user = Auth::getProvider()->retrieveByCredentials($credentials);
+        $datauser = $SIAP->datauser;
 
-        Auth::login($user);
+        $akses = Akses::where('nip', $credentials['nip'])->first();
 
-        return $this->authenticated($request, $user);
+        //dd($akses);
+
+        return $this->authenticated($request, $datauser, $akses->groups->lsakses);
+    }
+
+    public function logout()
+    {
+        Session::flush();
+        Auth::logout();
+        return redirect('login');
     }
 
     /**
@@ -49,8 +63,14 @@ class LoginController extends Controller
      * 
      * @return \Illuminate\Http\Response
      */
-    protected function authenticated(Request $request, $user) 
+    protected function authenticated(Request $request, $user, $akses) 
     {
-        return redirect()->intended();
+        $request->session()->put('authenticated', time());
+        $request->session()->put('nama', $user->nama);
+        $request->session()->put('nip', $user->nip);
+        //$request->session()->put('gid', $akses->gid);
+        $request->session()->put('akses', $akses);
+
+        return redirect()->intended('/vdashboard');
     }
 }

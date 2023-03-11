@@ -1,0 +1,56 @@
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+.bg-teal{
+	background-color: #008080;
+}
+
+.btn-teal{
+	background-color: #008080;
+}
+
+.btn-teal:hover{
+	background-color: #2E4F4F;
+}
+
+.text-teal{
+	color: #008080;
+}
+
+.text-bg-teal{
+	color: white;
+	background-color: #008080;	
+}
+
+.bg-pink{
+	background-color: #FF1493;
+}
+
+.btn-pink{
+	background-color: #FF1493;
+}
+
+.btn-pink:hover{
+	background-color: #2E4F4F;
+}
+
+.text-pink{
+	color: #FF1493;
+}
+
+.text-bg-pink{
+	color: white;
+	background-color: #FF1493;	
+}
+
+.info {
+    padding: 6px 8px;
+    line-height: 1.2;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #000;
+}

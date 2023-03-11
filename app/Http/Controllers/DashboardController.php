@@ -8,53 +8,90 @@ use App\Models\Proyek;
 use App\Models\NibKantor;
 use App\Models\VProyek1;
 
+use App\Models\Balita;
+use App\Models\Eppgbm;
+use App\Models\VEppgbmKecKel;
+use App\Models\VEppgbmGrUmurTbU;
+
 use Illuminate\Http\Request;
 use File;
 use time;
 use Illuminate\Support\Facades\Auth;
 use Storage;
+use DB;
 
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\IzinImport;
-use App\Imports\ProyekImport;
-use App\Imports\NibKantorImport;
+use App\Imports\EppgbmImport;
+use App\Imports\BalitaImport;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(){
+        return redirect()->to('/');
+    }
+
+    public function unauthorized(){
+        return view('unauthorized');
+    }
+
+    public function dashboardData()
     {
-        $sum_investasi_status_pm =  VProyek1::groupBy("uraian_status_penanaman_modal")
-                ->selectRaw('uraian_status_penanaman_modal, sum(jumlah_investasi) as sum_investasi_status_pm')
-                ->get();
-
-        $n_sum_investasi_status_pm = [];
-        foreach ($sum_investasi_status_pm as $key => $value) {
-            $idx = $value->uraian_status_penanaman_modal;
-            $nval = $value->sum_investasi_status_pm;
-            $n_sum_investasi_status_pm[$idx] = $nval;  
+        $sebarankeckel = VEppgbmKecKel::orderByDesc('jml')->get();
+        $nsebarankec = [];
+        $nsebarankeckel = [];
+        $nsebarankeckelP = [];
+        $nsebarankeckelSP = [];
+        foreach($sebarankeckel as $key=>$value){
+            $nsebarankec[$value->kec] = ($nsebarankec[$value->kec] ?? 0) + $value->jml;
+            $nsebarankeckel[$value->desa_kel] = $value->jml;
+            $nsebarankeckelP[$value->desa_kel] = $value->Pendek;
+            $nsebarankeckelSP[$value->desa_kel] = $value->Sangat_Pendek;
+        }
+        $petakelurahantpi = json_decode(file_get_contents(public_path() . "/geo/petakelurahantpi.geojson"), true);
+        //dd($petakelurahantpi);
+        foreach ($petakelurahantpi['features'] as $key => $value) {
+            $kel = $value['properties']['KELURAHAN'];
+            $petakelurahantpi['features'][$key]['properties']['sebaran'] = $nsebarankeckel[$kel] ?? 0; 
+            $petakelurahantpi['features'][$key]['properties']['pendek'] = $nsebarankeckelP[$kel] ?? 0; 
+            $petakelurahantpi['features'][$key]['properties']['sangat_pendek'] = $nsebarankeckelSP[$kel] ?? 0; 
+            if($kel == 'SEI JANG' || $kel == 'SUNGAI JANG'){
+                $petakelurahantpi['features'][$key]['properties']['sebaran'] = $nsebarankeckel['SEI JANG'] ?? 0; 
+                $petakelurahantpi['features'][$key]['properties']['pendek'] = $nsebarankeckelP['SEI JANG'] ?? 0; 
+                $petakelurahantpi['features'][$key]['properties']['sangat_pendek'] = $nsebarankeckelSP['SEI JANG'] ?? 0; 
+            }
+        }
+        
+        $umurtbu = VEppgbmGrUmurTbU::get();
+        $dtUmurTbu = [];
+        foreach ($umurtbu as $key => $value) {
+            $dtUmurTbu['labels'][] = $value->umur . " Tahun"; 
+            $dtUmurTbu['Pendek'][] = $value->Pendek; 
+            $dtUmurTbu['Sangat_Pendek'][] = $value->Sangat_Pendek; 
+            $dtUmurTbu['jml'][] = $value->jml; 
         }
 
-        $sum_tki_status_pm = VProyek1::groupBy("uraian_status_penanaman_modal")
-                ->selectRaw('uraian_status_penanaman_modal, sum(tki) as sum_tki_status_pm')
-                ->get();
-
-        //var_dump($sum_tki_status_pm); exit();
-
-        $n_sum_tki_status_pm = [];
-        foreach ($sum_tki_status_pm as $key => $value) {
-            $idx = $value->uraian_status_penanaman_modal;
-            $nval = $value->sum_tki_status_pm;
-            $n_sum_tki_status_pm[$idx] = $nval;  
-        }
         $data= [
             "page" => "Dashboard",
-            "sum_investasi" => VProyek1::sum('jumlah_investasi'),
-            "sum_tki" => VProyek1::sum('tki'),
-            "sum_investasi_status_pm" => $n_sum_investasi_status_pm,
-            "sum_tki_status_pm" => $n_sum_tki_status_pm,
+            "sebarankeckel" => $sebarankeckel,
+            "nsebarankec" => $nsebarankec,
+            "petakelurahantpi" => $petakelurahantpi,
+            "dtUmurTbu" => $dtUmurTbu,
         ];
-        
-        //echo "<pre>";print_r($data); exit();
+
+        //dd($data);
+
+        return $data;
+    }
+
+    public function vdashboard(){
+        $data = $this->dashboardData();
+        //$data['side'] = true;
+        return view('Dashboard', $data);
+    }
+
+    public function show(){
+        $data = $this->dashboardData();
+        $data['side'] = 1;
         return view('Dashboard', $data);
     }
 
@@ -94,34 +131,26 @@ class DashboardController extends Controller
 
         $jumlah_row = 0;
 
+        $vfailure = [];
+
         switch ($nama_target_table) {
-            case 'izin':
+
+            case 'eppgbm':
                 $filepath = public_path('file').'/'.$nama_file;
-                Excel::import(new IzinImport($nama_file), $filepath);
+                Excel::import(new BalitaImport($nama_file), $filepath);
 
-                $jumlah_row = Izin::where(['nama_file_upload' => $nama_file])->count();
-                break;
+                Excel::import(new EppgbmImport($nama_file), $filepath);
 
-            case 'proyek':
-                $filepath = public_path('file').'/'.$nama_file;
-                Excel::import(new ProyekImport($nama_file), $filepath);
-
-                $jumlah_row = Proyek::where(['nama_file_upload' => $nama_file])->count();
-                break;
-
-            case 'nib_kantor':
-                $filepath = public_path('file').'/'.$nama_file;
-                Excel::import(new NibKantorImport($nama_file), $filepath);
-
-                $jumlah_row = NibKantor::where(['nama_file_upload' => $nama_file])->count();
+                $jumlah_row = Eppgbm::where(['nama_file_upload' => $nama_file])->count();
                 break;
         }
 
 
 
         DoUploadFile::create([
-            'id_user'           => $user['id'],
-            'nama_user'         => $user['nama'],
+            //'id_user'           => $user['id'],
+            'nip'           => $request->session()->get('nip'),
+            'nama_user'         => $request->session()->get('nama'),
             'nama_file'         => $nama_file,
             'nama_target_table' => $nama_target_table,
             'jumlah_row'        => $jumlah_row,
@@ -155,20 +184,8 @@ class DashboardController extends Controller
 
         if($hapusData){
             switch ($nama_target_table) {
-                case 'izin':
-                    //var_dump(['nama_file_upload' => $nama_file]);
-                    $datatodelete = Izin::where(['nama_file_upload' => $nama_file])->get();
-                    //var_dump($datatodelete); exit();
-                    $fin = $datatodelete->each->delete();
-                    break;
-
-                case 'proyek':
-                    $datatodelete = Proyek::where(['nama_file_upload' => $nama_file])->get();
-                    $fin = $datatodelete->each->delete();
-                    break;
-
-                case 'nib_kantor':
-                    $datatodelete = NibKantor::where(['nama_file_upload' => $nama_file])->get();
+                case 'eppgbm':
+                    $datatodelete = Eppgbm::where(['nama_file_upload' => $nama_file])->get();
                     $fin = $datatodelete->each->delete();
                     break;
             }

@@ -1,12 +1,12 @@
 @extends('layout.master')
 
-@section('title', "Pengguna :: Pelayanan Terpadu")
+@section('title', "Pengguna :: Dashboard Stunting")
 
 @section('content')
-    <div class="container-fluid pt-3">
+    <div class="container-fluid pt-3 vh-100">
         <div class="row g-3">
             @if(in_array($method, ['Tambah', 'Edit', 'Hapus']))
-                <div class="col-md-6 col-sm-12 mx-auto">
+                <div class="col-lg-6 col-md-12 col-sm-12 mx-auto">
                     <div class="card shadow">
                         <div class="card-header text-center">
                             <a href="{{ url('/pengguna') }}" class="btn btn-sm btn-secondary float-start">
@@ -15,11 +15,12 @@
                             <h4 class="card-category">{{ $method }} Pengguna</h4>
                         </div>
                         <div class="card-body">
+                            @include('layout.partials.messages')
                             <form method="post" action="{{ route('pengguna.perform', ['method' => $method]) }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="nip" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nip') : $user->nip }}" placeholder="19xxxxxxxxxxxxxxx" required="required" autofocus>
+                                    <input type="text" class="form-control" name="nip" id="nip" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nip') : $user->nip }}" placeholder="19xxxxxxxxxxxxxxx" required="required" autofocus onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="18">
                                     <label for="floatingNIP">NIP</label>
                                     @if ($errors->has('nip'))
                                         <span class="text-danger text-left">{{ $errors->first('nip') }}</span>
@@ -27,7 +28,8 @@
                                 </div>
 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="nama" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama" required="required" autofocus>
+                                    <input type="hidden" class="form-control" name="nama" id="nama" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama">
+                                    <input type="text" class="form-control" id="nama1" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama" disabled>
                                     <label for="floatingNama">Nama</label>
                                     @if ($errors->has('nama'))
                                         <span class="text-danger text-left">{{ $errors->first('nama') }}</span>
@@ -35,38 +37,31 @@
                                 </div>
 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="jabatan" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('jabatan') : $user->jabatan }}" placeholder="Jabatan" required="required" autofocus>
-                                    <label for="floatingJabatan">Jabatan</label>
-                                    @if ($errors->has('jabatan'))
-                                        <span class="text-danger text-left">{{ $errors->first('jabatan') }}</span>
+                                    <select class="form-select" name="gid">
+                                        <option selected disabled>Pilih Group</option>
+                                        @foreach($group as $key => $value)
+                                            @if(isset($user) && $value->id == $user->gid)
+                                                <option value="{{$value->id}}" selected>{{$value->nama}}</option>
+                                            @else
+                                                <option value="{{$value->id}}">{{$value->nama}}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    <label for="floatingNama">Group Akses</label>
+                                    @if ($errors->has('gid'))
+                                        <span class="text-danger text-left">{{ $errors->first('gid') }}</span>
                                     @endif
                                 </div>
-                                @if(!isset($user) && ($method == 'Tambah'))
-                                    <div class="form-group form-floating mb-3">
-                                        <input type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="name@example.com" required="required" autofocus>
-                                        <label for="floatingEmail">Email address</label>
-                                        @if ($errors->has('email'))
-                                            <span class="text-danger text-left">{{ $errors->first('email') }}</span>
-                                        @endif
-                                    </div>
-                                    
-                                    <div class="form-group form-floating mb-3">
-                                        <input type="password" class="form-control" name="password" value="{{ old('password') }}" placeholder="Password" required="required">
-                                        <label for="floatingPassword">Password</label>
-                                        @if ($errors->has('password'))
-                                            <span class="text-danger text-left">{{ $errors->first('password') }}</span>
-                                        @endif
-                                    </div>
 
-                                    <div class="form-group form-floating mb-3">
-                                        <input type="password" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" placeholder="Confirm Password" required="required">
-                                        <label for="floatingConfirmPassword">Confirm Password</label>
-                                        @if ($errors->has('password_confirmation'))
-                                            <span class="text-danger text-left">{{ $errors->first('password_confirmation') }}</span>
-                                        @endif
-                                    </div>
-                                    <button class="w-100 btn btn-lg btn-primary" type="submit">Tambah</button>
-                                @else
+                                <div class="form-group form-floating mb-3">
+                                    <input type="text" class="form-control" name="no_hp" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('no_hp') : $user->no_hp }}" placeholder="Nomor HP">
+                                    <label for="floatingNama">Nomor HP</label>
+                                    @if ($errors->has('no_hp'))
+                                        <span class="text-danger text-left">{{ $errors->first('no_hp') }}</span>
+                                    @endif
+                                </div>
+
+                                @if(isset($user) && ($method != 'Tambah'))
                                     <div class="form-group form-floating mb-3">
                                         <input type="hidden" class="form-control" name="id" value="{{ $user->id }}" placeholder="ID" required="required" autofocus>
                                         <label for="floatingID">ID</label>
@@ -80,54 +75,9 @@
                                     @else
                                         <button class="w-100 btn btn-lg btn-primary" type="submit">Ubah</button>
                                     @endif
+                                @else
+                                    <button class="w-100 btn btn-lg btn-primary" type="submit">Simpan</button>
                                 @endif
-                                
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @elseif($method == 'Reset Password')
-                <div class="col-md-6 col-sm-12 mx-auto">
-                    <div class="card shadow">
-                        <div class="card-header text-center">
-                            <a href="{{ url('/pengguna') }}" class="btn btn-sm btn-secondary float-start">
-                                <span data-feather="arrow-left"></span>
-                            </a>
-                            <h4 class="card-category">{{ $method }} Pengguna</h4>
-                        </div>
-                        <div class="card-body">
-                            <form method="post" action="{{ route('pengguna.perform', ['method' => 'resetpassword']) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="nama" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama" required="required" disabled>
-                                    <label for="floatingNama">Nama</label>
-                                    @if ($errors->has('nama'))
-                                        <span class="text-danger text-left">{{ $errors->first('nama') }}</span>
-                                    @endif
-                                </div>
-                                <div class="form-group form-floating mb-3">
-                                    <input type="password" class="form-control" name="password" value="{{ old('password') }}" placeholder="Password" required="required">
-                                    <label for="floatingPassword">Password</label>
-                                    @if ($errors->has('password'))
-                                        <span class="text-danger text-left">{{ $errors->first('password') }}</span>
-                                    @endif
-                                </div>
-
-                                <div class="form-group form-floating mb-3">
-                                    <input type="password" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" placeholder="Confirm Password" required="required">
-                                    <label for="floatingConfirmPassword">Confirm Password</label>
-                                    @if ($errors->has('password_confirmation'))
-                                        <span class="text-danger text-left">{{ $errors->first('password_confirmation') }}</span>
-                                    @endif
-                                </div>
-                                <div class="form-group form-floating mb-3">
-                                    <input type="hidden" class="form-control" name="id" value="{{ $user->id }}" placeholder="ID" required="required" autofocus>
-                                    <label for="floatingID">ID</label>
-                                    @if ($errors->has('id'))
-                                        <span class="text-danger text-left">{{ $errors->first('id') }}</span>
-                                    @endif
-                                </div>
-                                <button class="w-100 btn btn-lg btn-primary" type="submit">Reset</button>
                                 
                             </form>
                         </div>
@@ -146,46 +96,88 @@
                         </div>
                         <div class="card-body">
                             @include('layout.partials.messages')
-                            <table class="table table-sm table-hover">
-                                <thead class="table-dark text-center">
-                                    <tr>
-                                        <th>NIP</th>
-                                        <th>Nama</th>
-                                        <th>Jabatan</th>
-                                        <th>Email</th>
-                                        <th>Aksi</th>    
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($user)
-                                        @foreach($user as $key => $value)
-                                            <tr>
-                                                <td class="text-center">{{ $value->nip }}</td>
-                                                <td>{{ $value->nama }}</td>
-                                                <td>{{ $value->jabatan }}</td>
-                                                <td class="text-center">{{ $value->email }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-between gap-1">
-                                                        <a href="{{ route('pengguna.edit', ['id' => $value->id]) }}" class="btn btn-sm btn-primary">
-                                                            <span data-feather="edit"></span>
-                                                        </a>
-                                                        <a href="{{ route('pengguna.resetpassword', ['id' => $value->id]) }}" class="btn btn-sm btn-warning">
-                                                            <span data-feather="key"></span>
-                                                        </a>
-                                                        <a href="{{ route('pengguna.hapus', ['id' => $value->id]) }}"  class="btn btn-sm btn-danger">
-                                                            <span data-feather="trash"></span>
-                                                        </a>
-                                                    </div>
-                                                </td>                    
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table id="tbData" class="table table-striped-columns">
+                                    <thead class="table-dark text-center">
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="20%">NIP</th>
+                                            <th>Nama</th>
+                                            <th width="35%">Nomor HP</th>
+                                            <th width="5%">Aksi</th>    
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($user)
+                                            @foreach($user as $key => $value)
+                                                <tr>
+                                                    <td>{{$key +1}}</td>
+                                                    <td class="text-center">{{ $value->nip }}</td>
+                                                    <td>{{ $value->nama }}</td>
+                                                    <td class="text-center">{{ $value->no_hp }}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-between gap-1">
+                                                            <a href="{{ route('pengguna.edit', ['id' => $value->id]) }}" class="btn btn-sm btn-primary">
+                                                                <span data-feather="edit"></span>
+                                                            </a>
+                                                            <a href="{{ route('pengguna.hapus', ['id' => $value->id]) }}"  class="btn btn-sm btn-danger">
+                                                                <span data-feather="trash"></span>
+                                                            </a>
+                                                        </div>
+                                                    </td>                    
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endif
         </div>
     </div>
-@stop
+@endsection
+
+@section('js-content')
+<script type="text/javascript"> 
+    document.addEventListener('DOMContentLoaded', function () {
+        let table = new DataTable('#tbData', {
+            paging: false,
+            ordering: false,
+            info: false,
+        });
+    });
+
+    document.getElementById("nip").addEventListener('keyup', function(e) {
+        var input_value = this.value;
+
+        checkNIP(input_value)
+    });
+
+    function checkNIP(l) {
+        if(l.length == '8' || l.length == '18'){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                 if (this.readyState == 4 && this.status == 200) {
+                     let retval = JSON.parse(this.responseText);
+                     console.log(retval)
+                     
+                     if(retval['status'] == 200){
+                        document.getElementById('nama').value = retval['datapegawai']['nama'];
+                        document.getElementById('nama1').value = retval['datapegawai']['nama'];
+                     }else{
+                        alert(retval['message'])
+                        document.getElementById('nama').value = '';
+                        document.getElementById('nama1').value = '';
+                     }
+                 }
+            };
+            xhttp.open("GET", "/api/getPegawai/"+l, true);
+            //xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send();
+        }
+    }
+
+</script>
+@endsection

@@ -1,9 +1,9 @@
 @extends('layout.master')
 
-@section('title', "Upload File :: Pelayanan Terpadu")
+@section('title', "Upload File :: Dashboard Stunting")
 
 @section('content')
-    <div class="container-fluid pt-3">
+    <div class="container-fluid pt-3 vh-100">
         <div class="card shadow">
             <div class="card-header text-center">
                 <h4 class="card-category">Upload File</h4>
@@ -12,14 +12,14 @@
                 <div class="d-flex justify-content-between mb-3">
                     <h5>Contoh Format File</h5>
                     <div class="gap-2">
-                        <a href="{{ route('dashboard.performDownloadCth', ['filename' => 'cth_izin.csv']) }}" type="button" class="btn btn-sm btn-info text-dark">
-                            <span data-feather="download"></span> Contoh Format Izin
+                        <a href="{{ route('dashboard.performDownloadCth', ['filename' => 'cth_izin.csv']) }}" type="button" class="btn btn-sm btn-info text-dark disabled">
+                            <span data-feather="download"></span> Contoh Format ILSIMIL
                         </a>
                         <a href="{{ route('dashboard.performDownloadCth', ['filename' => 'cth_proyek.csv']) }}" type="button" class="btn btn-sm btn-info text-dark">
-                            <span data-feather="download"></span> Contoh Format Proyek
+                            <span data-feather="download"></span> Contoh Format EPPBGM
                         </a>
-                        <a href="{{ route('dashboard.performDownloadCth', ['filename' => 'cth_nib_kantor.csv']) }}" type="button" class="btn btn-sm btn-info text-dark">
-                            <span data-feather="download"></span> Contoh Format NIB Kantor
+                        <a href="{{ route('dashboard.performDownloadCth', ['filename' => 'cth_nib_kantor.csv']) }}" type="button" class="btn btn-sm btn-info text-dark disabled">
+                            <span data-feather="download"></span> Contoh Format EKOHOT
                         </a>
                     </div>
                 </div>
@@ -31,16 +31,16 @@
                             <div class="form-floating">
                                 <select class="form-select" id="nama_target_table" name="nama_target_table" aria-label="" required="required">
                                     <option selected disabled>Open this select menu</option>
-                                    <option value="izin">Izin</option>
-                                    <option value="proyek">Proyek</option>
-                                    <option value="nib_kantor">NIB Kantor</option>
+                                    <option value="ilsimmil" disabled>ILSIMIL</option>
+                                    <option value="eppgbm">EPPGBM</option>
+                                    <option value="ekohot" disabled>EKOHOT</option>
                                 </select>
                                 <label for="nama_target_table">Nama Target Table</label>
                             </div>
                         </div>
                         <div class="col-md-5 col-sm-12 mb-3">
                             <div class="form-group form-floating">
-                                <input type="file" class="form-control" name="filetoupload" value="" placeholder="Nama File" required="required">
+                                <input type="file" class="form-control" name="filetoupload" value="" placeholder="Nama File" required="required" accept=".csv, .txt">
                                 <label for="floatingNama">Upload File</label>
                                 @if ($errors->has('nama_file'))
                                     <span class="text-danger text-left">{{ $errors->first('nama_file') }}</span>
@@ -58,10 +58,11 @@
                 <table class="table table-sm table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>Nama File</th>
-                            <th>Nama Target Table</th>
-                            <th>Jumlah Row</th>
-                            <th>User</th>
+                            <th>No</th>
+                            <th width="30%">Nama File</th>
+                            <th width="30%">Nama Target Table</th>
+                            <th width="10%">Jumlah Row</th>
+                            <th width="15%">User</th>
                             <th>Aksi</th>    
                         </tr>
                     </thead>
@@ -69,6 +70,7 @@
                         @if($dtupload)
                             @foreach($dtupload as $key => $value)
                                 <tr>
+                                    <td>{{$key +1}}</td>
                                     <td>{{ $value->nama_file }}</td>
                                     <td>{{ $value->nama_target_table }}</td>
                                     <td>{{ $value->jumlah_row }}</td>

@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', "Dashboard :: Pelayanan Terpadu")
+@section('title', "Dashboard :: Dashboard Stunting")
 
 @section('content')
     <div class="card border-0 border-radius">

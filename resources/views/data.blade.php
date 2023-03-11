@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', "Data :: Pelayanan Terpadu")
+@section('title', "Data :: Dashboard Stunting")
 
 @section('content')
     <div class="container-fluid pt-3">
