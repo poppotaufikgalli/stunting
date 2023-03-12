@@ -114,7 +114,7 @@
                                                     <td>{{$key +1}}</td>
                                                     <td class="text-center">{{ $value->nip }}</td>
                                                     <td>{{ $value->nama }}</td>
-                                                    <td class="text-center">{{ $value->no_hp }}</td>
+                                                    <td class="text-center">{{ $value->remember_token }}</td>
                                                     <td>
                                                         <div class="d-flex justify-content-between gap-1">
                                                             <a href="{{ route('pengguna.edit', ['id' => $value->id]) }}" class="btn btn-sm btn-primary">

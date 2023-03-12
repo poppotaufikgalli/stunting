@@ -7,8 +7,14 @@
                 </a>
 
                 <ul class="nav col-md-4 justify-content-end">
-                    <li class="nav-item"><a href="{{route('login.show')}}" class="nav-link px-2 text-light">Login</a></li>
+                    @if(Session::get('nip'))
+                        <li class="nav-item"><a href="{{route('logout.perform')}}" class="nav-link px-2 text-light">Logout</a></li>
+                    @else
+                        <li class="nav-item"><a href="{{route('login.show')}}" class="nav-link px-2 text-light">Login</a></li>
+                    @endif
                     <li class="nav-item"><a href="{{route('dashboard')}}" class="nav-link px-2 text-light">Dashboard</a></li>
+                    <li class="nav-item"><a href="{{route('dashboard')}}" class="nav-link px-2 text-light">Berita</a></li>
+                    <li class="nav-item"><a href="{{route('dashboard')}}" class="nav-link px-2 text-light">Infografis</a></li>
                     <li class="nav-item"><a href="#" class="nav-link px-2 text-light">Hubungi kami</a></li>
                 </ul>
               </footer>

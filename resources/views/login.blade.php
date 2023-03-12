@@ -34,6 +34,11 @@
                     @endif
                 </div>
 
+                <div class="form-check form-check-inline mb-3">
+                    <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me" value="remember_me" checked>
+                    <label class="form-check-label" for="remember_me">Ingat saya</label>
+                </div>
+
                 <div class="form-group form-floating mb-3">
                     <button class="w-100 btn btn-lg btn-teal text-light" type="submit">Login</button>
                 </div>

@@ -51,7 +51,7 @@ class LoginRequest extends FormRequest
             ];
         }
 
-        return $this->only('nip', 'password');
+        return $this->only('nip', 'password', 'remember_me');
     }
 
     /**

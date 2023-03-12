@@ -26,6 +26,7 @@ class Akses extends Model
         'nama',
         'no_hp',
         'gid',
+        'remember_token',
         'crid',
         'upid'
     ];

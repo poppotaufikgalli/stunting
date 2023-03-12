@@ -126,6 +126,8 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js-content')
     <script type="text/javascript">
         const hapusModal = document.getElementById('hapusModal')
         hapusModal.addEventListener('show.bs.modal', event => {
@@ -152,4 +154,4 @@
             modalBodyInputId.value = ""
         })
     </script>
-@stop
+@endsection

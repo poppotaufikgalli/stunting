@@ -17,21 +17,20 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $akses = $request->session()->get('akses');
-        $nakses = json_decode($akses, true);
-        //dd($akses);
-        $keys = array_keys(json_decode($akses, true));
         $currentPath = explode('.', Route::currentRouteName());
-        //var_dump($currentPath);
-        //var_dump($keys);
-        //var_dump(json_decode($akses));
-        //dd($currentPath);
+        //var_dump($currentPath[0]);
 
+        $akses = $request->session()->get('akses');
+        if(!isset($akses)){
+            return redirect('/login');
+        }
+
+        $nakses = json_decode($akses, true);
+        $keys = array_keys(json_decode($akses, true));
+        
         if (in_array($currentPath[0], $keys) ) {
             if(isset($currentPath[1])){
                 $subAction = $nakses[$currentPath[0]];
-                //var_dump($subAction);
-                //var_dump($currentPath[1]);
                 if (in_array($currentPath[1], $subAction) ) {
                     return $next($request);
                 }else{
@@ -40,6 +39,9 @@ class RoleMiddleware
             }
             
         }else{
+            if($currentPath[0] == 'vdashboard'){
+                return $next($request);
+            }
             return redirect('/unauthorized')->withErrors(json_encode($currentPath));
         }
 

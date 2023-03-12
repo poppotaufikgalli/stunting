@@ -45,7 +45,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
      */
 
     Route::get('/', [DashboardController::class, 'show'])->name('dashboard');
-    Route::get('/vdashboard', [DashboardController::class, 'vdashboard'])->name('vdashboard');
     Route::get('/login', [LoginController::class, 'show'])->name('login.show');
     Route::post('/login', [LoginController::class, 'login'])->name('login.perform');
     Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
@@ -58,7 +57,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         //Route::get('/', 'DashboardController@index')->name('home.index');
 
         //Route::get('/dashboard',[DashboardController::class, 'index']);
-
+        Route::get('/vdashboard', [DashboardController::class, 'vdashboard'])->name('vdashboard');
         Route::prefix('data')->group(function () {
             Route::get('/',[DataSheetController::class, 'show'])->name('data.show');
             Route::get('/izin',[DataSheetController::class, 'izin'])->name('data.izin');

@@ -18,7 +18,11 @@ class LoginController extends Controller
      */
     public function show()
     {
-        return view('login');
+        if(Session::get('nip')){
+            return redirect()->intended('/vdashboard');
+        }else{
+            return view('login');    
+        }
     }
 
     /**
@@ -31,6 +35,7 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $request->getCredentials();
+        //dd($credentials);
 
         $SIAP = $this->SIAPLogin($credentials);
         if(!$SIAP->loginStatus):
@@ -43,16 +48,24 @@ class LoginController extends Controller
 
         $akses = Akses::where('nip', $credentials['nip'])->first();
 
+        if(!isset($akses)){
+            return redirect()->to('login')
+                ->withErrors("User tidak memiliki akses pada Aplikasi");
+        }
+
+        if(isset($credentials['remember_me'])){
+            $akses->remember_token = $request->cookie('laravel_session');
+            $akses->save();
+        }else{
+            if($akses->remember_token != null){
+                $akses->remember_token = null;
+                $akses->save();  
+            }
+        }
+
         //dd($akses);
 
         return $this->authenticated($request, $datauser, $akses->groups->lsakses);
-    }
-
-    public function logout()
-    {
-        Session::flush();
-        Auth::logout();
-        return redirect('login');
     }
 
     /**
