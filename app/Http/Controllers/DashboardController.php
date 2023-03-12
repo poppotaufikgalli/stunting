@@ -102,7 +102,7 @@ class DashboardController extends Controller
             "dtupload" => DoUploadFile::get(),
         ];
 
-        return view('Upload', $data);
+        return view('upload', $data);
     }
 
     public function performUpload(Request $request)
