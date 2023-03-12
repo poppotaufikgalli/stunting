@@ -86,13 +86,13 @@ class DashboardController extends Controller
     public function vdashboard(){
         $data = $this->dashboardData();
         //$data['side'] = true;
-        return view('Dashboard', $data);
+        return view('dashboard', $data);
     }
 
     public function show(){
         $data = $this->dashboardData();
         $data['side'] = 1;
-        return view('Dashboard', $data);
+        return view('dashboard', $data);
     }
 
     public function upload()
