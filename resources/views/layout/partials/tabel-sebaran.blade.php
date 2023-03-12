@@ -2,7 +2,7 @@
 	<div class="col d-flex justify-content-center align-items-center">
         <h3 class="h4 px-5 py-2 rounded-pill text-teal bg-light bg-gradient">Rekapitulasi Data Stunting</h3>
     </div>
-	<div class="col-3">
+	<div class="col-md-3 col-sm-12">
 		<div class="card border-light h-100">
 			<div class="card-body">
 				<h3 class="h4 text-center">Sebaran Jenis Kelamin</h3>
@@ -10,7 +10,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-3">
+	<div class="col-md-3 col-sm-12">
 		<div class="card border-light h-100">
 			<div class="card-body">
 				<h3 class="h4 text-center">Sebaran Tinggi Badan</h3>
@@ -18,7 +18,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-6">
+	<div class="col-md-6 col-sm-12">
 		<div class="card border-light h-100">
 			<div class="card-body">
 				<h3 class="h4 text-center">Balita Stunting Umur Per Tinggi Badan</h3>
@@ -26,7 +26,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-6">
+	<div class="col-md-6 col-sm-12">
 		<div class="card h-100">
 			<div class="card-body table-responsive">
 				<h3 class="h4 text-center">Data Kelurahan Stunting</h3>

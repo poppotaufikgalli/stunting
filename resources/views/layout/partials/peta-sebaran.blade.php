@@ -1,8 +1,8 @@
 <div class="row g-5">
-    <div class="col-8">
+    <div class="col-md-8 col-sm-12">
         <div id="mapContainer" class="m-0 rounded shadow" style="height: 80vh;"></div>
     </div>
-    <div class="col-4">
+    <div class="col-md-4 col-sm-12">
         <table class="table table-sm table-hover table-striped">
             <thead class="table-dark">
                 <tr>
