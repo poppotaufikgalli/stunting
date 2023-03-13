@@ -22,7 +22,7 @@
 		<div class="card border-light h-100">
 			<div class="card-body">
 				<h3 class="h4 text-center">Balita Stunting Umur Per Tinggi Badan</h3>
-				<canvas id="myChart4" ></canvas>
+				<canvas id="myChart4" style=""></canvas>
 			</div>
 		</div>
 	</div>
@@ -88,7 +88,8 @@
 		var T2 = '{{$T2}}';
 		var Tot = '{{$Tot}}';
 
-		var dtUmurTbu = {!! json_encode($dtUmurTbu) !!};
+		//var dtUmurTbu = {!! json_encode($dtUmurTbu) !!};
+		var dtUmurTbu = {!! json_encode($dtUmurGiziTbu) !!};
 
 		Chart.defaults.font.family = "Nunito";
 
@@ -273,7 +274,7 @@
 			          		display: true,
 			          		text: 'Jumlah Balita',
 			        	},
-			        	max: 100,
+			        	max: 250,
 			      	},
 			    },
 			    plugins:{

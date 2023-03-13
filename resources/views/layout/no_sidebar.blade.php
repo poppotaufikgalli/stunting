@@ -6,6 +6,7 @@
         </div>
     </div>
 </nav>
+<div style="height: 150px;"></div>
 <script type="text/javascript">
     const scrollOffset = 100;
     

@@ -96,6 +96,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::prefix('eppgbm')->group(function () {
             Route::get('/', [EppgbmController::class, 'list'])->name('eppgbm');
+            Route::get('/tambah', [EppgbmController::class, 'tambah'])->name('eppgbm.tambah');
+            Route::get('/edit/{id}', [EppgbmController::class, 'edit'])->name('eppgbm.edit');
+            Route::post('/postGroup/{method}', [EppgbmController::class, 'postGroup'])->name('eppgbm.perform');
+            Route::get('/hapus/{id}', [EppgbmController::class, 'hapus'])->name('eppgbm.hapus');
         });
 
         Route::prefix('ilsimil')->group(function () {

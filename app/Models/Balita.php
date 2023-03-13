@@ -15,6 +15,12 @@ class Balita extends Model
      *
      * @var array<int, string>
      */
+
+    public function asuhan()
+    {
+        return $this->hasOne(Asuh::class, 'nik', 'nik');
+    }
+
     protected $fillable = [
         'nik',
         'nama',

@@ -37,6 +37,7 @@
                                 <th>Tinggi</th>
                                 <th>TB/U</th>
                                 <th>Tanggal Pengukuran</th>
+                                <th>Orang Tua Asuh</th>
                             </tr>
                         </thead>
                     </table>

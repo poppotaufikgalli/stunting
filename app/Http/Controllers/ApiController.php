@@ -24,7 +24,10 @@ class ApiController extends Controller
         if($kel == 'SUNGAI JANG'){
             $kel = 'SEI JANG';
         }
-        $retval['data'] = Eppgbm::join('t_balita', 't_eppgbm.nik', '=', 't_balita.nik')->where(['kec' => $kec, 'desa_kel' => $kel])->get();
+        $retval['data'] = Eppgbm::join('t_balita', 't_eppgbm.nik', '=', 't_balita.nik')
+            ->leftjoin('asuh', 't_eppgbm.nik', '=', 'asuh.nik')
+            ->where(['kec' => $kec, 'desa_kel' => $kel])
+            ->get();
         return response()->json($retval, 200);   
     }
 }

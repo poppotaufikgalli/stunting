@@ -12,6 +12,7 @@ use App\Models\Balita;
 use App\Models\Eppgbm;
 use App\Models\VEppgbmKecKel;
 use App\Models\VEppgbmGrUmurTbU;
+use App\Models\VEppgbmGrUmurGiziTbU;
 
 use Illuminate\Http\Request;
 use File;
@@ -61,13 +62,39 @@ class DashboardController extends Controller
             }
         }
         
-        $umurtbu = VEppgbmGrUmurTbU::get();
         $dtUmurTbu = [];
+        /*$umurtbu = VEppgbmGrUmurTbU::get();
         foreach ($umurtbu as $key => $value) {
             $dtUmurTbu['labels'][] = $value->umur . " Tahun"; 
             $dtUmurTbu['Pendek'][] = $value->Pendek; 
             $dtUmurTbu['Sangat_Pendek'][] = $value->Sangat_Pendek; 
             $dtUmurTbu['jml'][] = $value->jml; 
+        }*/
+
+        $dtUmurGiziTbu = [];
+        $labels = "";
+        $pendek = 0;
+        $sangat_pendek = 0;
+        $jml = 0;
+        $umurgizitbu = VEppgbmGrUmurGiziTbU::get();
+        foreach ($umurgizitbu as $key => $value) {
+            $labels = "0-23 Bulan"; 
+            $pendek = $value->Pendek; 
+            $sangat_pendek = $value->Sangat_Pendek; 
+            $jml = $value->jml; 
+
+            if($value->umur < 24){
+                $dtUmurGiziTbu['labels'][0] = "0-23 Bulan"; 
+                $dtUmurGiziTbu['Pendek'][0] = isset($dtUmurGiziTbu['Pendek'][0]) ? $dtUmurGiziTbu['Pendek'][0] + $value->Pendek : $value->Pendek; 
+                $dtUmurGiziTbu['Sangat_Pendek'][0] = isset($dtUmurGiziTbu['Sangat_Pendek'][0]) ? $dtUmurGiziTbu['Sangat_Pendek'][0] + $value->Sangat_Pendek : $value->Sangat_Pendek; 
+                $dtUmurGiziTbu['jml'][0] = isset($dtUmurGiziTbu['jml'][0]) ? $dtUmurGiziTbu['jml'][0] + $value->jml : $value->jml; 
+            }else{
+                $dtUmurGiziTbu['labels'][1] = "24-59 Bulan"; 
+                $dtUmurGiziTbu['Pendek'][1] = isset($dtUmurGiziTbu['Pendek'][1]) ? $dtUmurGiziTbu['Pendek'][1] + $value->Pendek : $value->Pendek; 
+                $dtUmurGiziTbu['Sangat_Pendek'][1] = isset($dtUmurGiziTbu['Sangat_Pendek'][1]) ? $dtUmurGiziTbu['Sangat_Pendek'][1] + $value->Sangat_Pendek : $value->Sangat_Pendek; 
+                $dtUmurGiziTbu['jml'][1] = isset($dtUmurGiziTbu['jml'][1]) ? $dtUmurGiziTbu['jml'][1] + $value->jml : $value->jml; 
+            }
+            
         }
 
         $data= [
@@ -76,6 +103,7 @@ class DashboardController extends Controller
             "nsebarankec" => $nsebarankec,
             "petakelurahantpi" => $petakelurahantpi,
             "dtUmurTbu" => $dtUmurTbu,
+            "dtUmurGiziTbu" => $dtUmurGiziTbu,
         ];
 
         //dd($data);
@@ -97,6 +125,17 @@ class DashboardController extends Controller
 
     public function upload()
     {
+        /*$eppgbm = Eppgbm::get();
+        $nik = $eppgbm->mapToGroups(function ($item, $key) {
+            return [$item['nik'] => $item['tgl_pengukuran']];
+        });
+        
+        dd(in_array('2023-02-12', $nik['2172207107218051']->toArray()));*/
+
+        /*$balita = Balita::get();
+        $nik = $balita->pluck('nik');
+        dd($nik);*/
+
         $data= [
             "page" => "Upload",
             "dtupload" => DoUploadFile::get(),

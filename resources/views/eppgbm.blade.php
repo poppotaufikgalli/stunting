@@ -1,69 +1,60 @@
 @extends('layout.master')
 
-@section('title', "Pengguna :: Dashboard Stunting")
+@section('title', "Orang Tua Asuh :: Dashboard Stunting")
 
 @section('content')
-    <div class="container-fluid pt-3">
+    <div class="container-fluid pt-3 vh-100">
         <div class="row g-3">
             @if(in_array($method, ['Tambah', 'Edit', 'Hapus']))
                 <div class="col-lg-6 col-md-12 col-sm-12 mx-auto">
                     <div class="card shadow">
                         <div class="card-header text-center">
-                            <a href="{{ url('/pengguna') }}" class="btn btn-sm btn-secondary float-start">
+                            <a href="{{ url('/eppgbm') }}" class="btn btn-sm btn-secondary float-start">
                                 <span data-feather="arrow-left"></span>
                             </a>
-                            <h4 class="card-category">{{ $method }} Pengguna</h4>
+                            <h4 class="card-category">{{ $method }} Orang Tua Asuh</h4>
                         </div>
                         <div class="card-body">
                             @include('layout.partials.messages')
-                            <form method="post" action="{{ route('pengguna.perform', ['method' => $method]) }}">
+                            <form method="post" action="{{ route('eppgbm.perform', ['method' => $method]) }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="nip" id="nip" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nip') : $user->nip }}" placeholder="19xxxxxxxxxxxxxxx" required="required" autofocus onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="18">
-                                    <label for="floatingNIP">NIP</label>
-                                    @if ($errors->has('nip'))
-                                        <span class="text-danger text-left">{{ $errors->first('nip') }}</span>
+                                    <input type="text" class="form-control" name="nik" id="nik" value="{{ (!isset($data) && ($method == 'Tambah')) ? old('nik') : $data->nik }}" placeholder="2172xxxxxxxxxx" required="required" autofocus onkeyup="value=value.replace(/[^\d]/g,'')" maxlength="16">
+                                    <label for="floatingNIP">NIK</label>
+                                    @if ($errors->has('nik'))
+                                        <span class="text-danger text-left">{{ $errors->first('nik') }}</span>
                                     @endif
                                 </div>
 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="hidden" class="form-control" name="nama" id="nama" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama">
-                                    <input type="text" class="form-control" id="nama1" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('nama') : $user->nama }}" placeholder="Nama" disabled>
-                                    <label for="floatingNama">Nama</label>
+                                    <input type="hidden" class="form-control" name="nama" id="nama1" value="{{ (!isset($data) && ($method == 'Tambah')) ? old('nama') : $data->nama }}" placeholder="Nama">
+                                    <input type="text" class="form-control" id="nama" value="{{ (!isset($data) && ($method == 'Tambah')) ? old('nama') : $data->nama }}" placeholder="Nama" disabled>
+                                    <label for="nama">Nama</label>
                                     @if ($errors->has('nama'))
                                         <span class="text-danger text-left">{{ $errors->first('nama') }}</span>
                                     @endif
                                 </div>
 
                                 <div class="form-group form-floating mb-3">
-                                    <select class="form-select" name="gid">
-                                        <option selected disabled>Pilih Group</option>
-                                        @foreach($group as $key => $value)
-                                            @if(isset($user) && $value->id == $user->gid)
-                                                <option value="{{$value->id}}" selected>{{$value->nama}}</option>
-                                            @else
-                                                <option value="{{$value->id}}">{{$value->nama}}</option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    <label for="floatingNama">Group Akses</label>
-                                    @if ($errors->has('gid'))
-                                        <span class="text-danger text-left">{{ $errors->first('gid') }}</span>
+                                    <input type="text" class="form-control" name="orang_tua_asuh" value="{{ (!isset($data) && ($method == 'Tambah')) ? old('orang_tua_asuh') : $data->orang_tua_asuh }}" placeholder="Orang Tua Asuh">
+                                    <label for="floatingNama">Nama Orang Tua Asuh</label>
+                                    @if ($errors->has('orang_tua_asuh'))
+                                        <span class="text-danger text-left">{{ $errors->first('orang_tua_asuh') }}</span>
                                     @endif
                                 </div>
 
                                 <div class="form-group form-floating mb-3">
-                                    <input type="text" class="form-control" name="no_hp" value="{{ (!isset($user) && ($method == 'Tambah')) ? old('no_hp') : $user->no_hp }}" placeholder="Nomor HP">
-                                    <label for="floatingNama">Nomor HP</label>
-                                    @if ($errors->has('no_hp'))
-                                        <span class="text-danger text-left">{{ $errors->first('no_hp') }}</span>
+                                    <textarea class="form-control" name="keterangan" placeholder="Keterangan" style="height: 100px">{{ (!isset($data) && ($method == 'Tambah')) ? old('keterangan') : $data->keterangan }}</textarea>
+                                    <label for="floatingNama">Keterangan</label>
+                                    @if ($errors->has('keterangan'))
+                                        <span class="text-danger text-left">{{ $errors->first('keterangan') }}</span>
                                     @endif
                                 </div>
 
-                                @if(isset($user) && ($method != 'Tambah'))
+                                @if(isset($data) && ($method != 'Tambah'))
                                     <div class="form-group form-floating mb-3">
-                                        <input type="hidden" class="form-control" name="id" value="{{ $user->id }}" placeholder="ID" required="required" autofocus>
+                                        <input type="hidden" class="form-control" name="id" value="{{ $data->id }}" placeholder="ID" required="required" autofocus>
                                         <label for="floatingID">ID</label>
                                         @if ($errors->has('id'))
                                             <span class="text-danger text-left">{{ $errors->first('id') }}</span>
@@ -89,8 +80,8 @@
                         <div class="card-header text-center">
                             <h4 class="card-category">
                                 {{ $method }} EPPGBM
-                                <a href="{{ url('/pengguna/tambah') }}" class="btn btn-sm btn-success float-end">
-                                    <span data-feather="plus"></span>
+                                <a href="{{ url('/eppgbm/tambah') }}" class="btn btn-sm btn-success float-end">
+                                    <span data-feather="heart"></span>
                                 </a>
                             </h4>
                         </div>
@@ -113,6 +104,7 @@
                                             <th>TB/U</th>
                                             <th>BB/TB</th>
                                             <th>Tgl Pengukuran</th>
+                                            <th>Orang Tua Asuh</th>
                                             <th width="5%">Aksi</th>    
                                         </tr>
                                     </thead>
@@ -135,13 +127,16 @@
                                                     <td>{{ $value->bb_u }}</td>
                                                     <td>{{ $value->tb_u }}</td>
                                                     <td>{{ $value->bb_tb }}</td>
-                                                    <td>{{ $value->tgl_pengukuran }}</td>
+                                                    <td>
+                                                        {{ date("d-m-Y", strtotime($value->tgl_pengukuran)) }}
+                                                    </td>
+                                                    <td>{{ $value->asuhan->orang_tua_asuh ?? "-" }}</td>
                                                     <td>
                                                         <div class="d-flex justify-content-between gap-1">
-                                                            <a href="{{ route('pengguna.edit', ['id' => $value->id]) }}" class="btn btn-sm btn-primary">
-                                                                <span data-feather="edit"></span>
+                                                            <a href="{{ route('eppgbm.edit', ['id' => $value->id]) }}" class="btn btn-sm btn-pink text-light">
+                                                                <span data-feather="heart"></span>
                                                             </a>
-                                                            <a href="{{ route('pengguna.hapus', ['id' => $value->id]) }}"  class="btn btn-sm btn-danger">
+                                                            <a href="{{ route('eppgbm.hapus', ['id' => $value->id]) }}"  class="btn btn-sm btn-danger disabled">
                                                                 <span data-feather="trash"></span>
                                                             </a>
                                                         </div>

@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <hr class="mb-3">
-                <form method="post" action="{{route('upload.performUpload')}}" enctype="multipart/form-data">
+                <form method="post" action="{{route('upload.performUpload')}}" enctype="multipart/form-data" id="frmUpload">
                     <div class="row">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                         <div class="col-md-5 col-sm-12 mb-3">
@@ -125,33 +125,44 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalLoading" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content d-flex align-items-center p-3">
+                    <div class="spinner-grow bg-teal" style="width: 5rem; height: 5rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    Mohon menunggu, sedang mengupload data.
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 @section('js-content')
     <script type="text/javascript">
         const hapusModal = document.getElementById('hapusModal')
-        hapusModal.addEventListener('show.bs.modal', event => {
-            // Button that triggered the modal
-            const button = event.relatedTarget
-            // Extract info from data-bs-* attributes
-            const id = button.getAttribute('data-bs-id')
-            // If necessary, you could initiate an AJAX request here
-            // and then do the updating in a callback.
-            //
-            // Update the modal's content.
-            //const modalTitle = hapusModal.querySelector('.modal-title')
-            const modalBodyInputId = hapusModal.querySelector('.modal-body input#id')
+        const frmUpload = document.getElementById('frmUpload');
+        const myModalEl = document.getElementById('modalLoading');
 
-            //modalTitle.textContent = `New message to ${recipient}`
+        hapusModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget
+            const id = button.getAttribute('data-bs-id')
+            const modalBodyInputId = hapusModal.querySelector('.modal-body input#id')
             modalBodyInputId.value = id
         });
 
         hapusModal.addEventListener('hidden.bs.modal', event => {
             const button = event.relatedTarget
-            
             const modalBodyInputId = hapusModal.querySelector('.modal-body input#id')
-
             modalBodyInputId.value = ""
-        })
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalLoading = new bootstrap.Modal(myModalEl, {})
+
+            frmUpload.addEventListener('submit', function(e){
+                //e.preventDefault();
+                modalLoading.show()
+            });
+        });
     </script>
 @endsection
